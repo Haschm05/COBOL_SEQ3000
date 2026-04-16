@@ -12,38 +12,31 @@
            SELECT OLDEMP    ASSIGN TO OLDEMP.
            SELECT NEWEMP    ASSIGN TO NEWEMP
                             FILE STATUS IS NEWEMP-FILE-STATUS.
-           SELECT ERRTRAN3  ASSIGN TO ERRTRAN3
-                            FILE STATUS IS ERRTRAN3-FILE-STATUS.
+           SELECT ERRTRAN   ASSIGN TO ERRTRAN
+                            FILE STATUS IS ERRTRAN-FILE-STATUS.
 
        DATA DIVISION.
 
        FILE SECTION.
 
-       FD  MNTTRAN.
+       FD  EMPTRAN.
+       01  TRANSACTION-RECORD      PIC X(50).
 
-       01  TRANSACTION-RECORD      PIC X(61).
+       FD  OLDEMP.
+       01  OLD-MASTER-RECORD       PIC X(57).
 
-       FD  OLDMAST.
-
-       01  OLD-MASTER-RECORD       PIC X(70).
-
-       FD  NEWMAST.
-
+       FD  NEWEMP.
        01  NEW-MASTER-RECORD.
+           05 NM-EMPLOYEE-ID       PIC X(5).
+           05 NM-EMPLOYEE-NAME     PIC X(30).         
+           05 NM-DEPARTMENT-CODE   PIC X(5).
+           05 NM-JOB-CLASS         PIC X(2).
+           05 NM-ANNUAL-SALARY     PIC S9(5)V99.
+           05 NM-VACATION-HOURS    PIC S9(3).
+           05 NM-SICK-HOURS        PIC S9(3)V99.
 
-           05  NM-ITEM-NO              PIC X(5).
-           05  NM-DESCRIPTIVE-DATA.
-               10  NM-ITEM-DESC        PIC X(40).
-               10  NM-UNIT-COST        PIC S9(3)V99.
-               10  NM-UNIT-PRICE       PIC S9(3)V99.
-           05  NM-INVENTORY-DATA.
-               10  NM-REORDER-POINT    PIC S9(5).
-               10  NM-ON-HAND          PIC S9(5).
-               10  NM-ON-ORDER         PIC S9(5).
-
-       FD  ERRTRAN.
-
-       01  ERROR-TRANSACTION       PIC X(61).
+       FD  ERRTRAN3.
+       01  ERROR-TRANSACTION       PIC X(50).
 
        WORKING-STORAGE SECTION.
 
@@ -58,51 +51,50 @@
                88  WRITE-MASTER                        VALUE "Y".
 
        01  FILE-STATUS-FIELDS.
-           05  NEWMAST-FILE-STATUS     PIC XX.
-               88  NEWMAST-SUCCESSFUL          VALUE "00".
+           05  NEWEMP-FILE-STATUS      PIC XX.
+               88  NEWEMP-SUCCESSFUL           VALUE "00".
            05  ERRTRAN-FILE-STATUS     PIC XX.
                88  ERRTRAN-SUCCESSFUL          VALUE "00".
 
-       01  MAINTENANCE-TRANSACTION.
-           05  MT-TRANSACTION-CODE     PIC X.
-               88  DELETE-RECORD               VALUE "1".
-               88  ADD-RECORD                  VALUE "2".
-               88  CHANGE-RECORD               VALUE "3".
-           05  MT-MASTER-DATA.
-               10  MT-ITEM-NO          PIC X(5).
-               10  MT-ITEM-DESC        PIC X(40).
-               10  MT-UNIT-COST        PIC S9(3)V99.
-               10  MT-UNIT-PRICE       PIC S9(3)V99.
-               10  MT-REORDER-POINT    PIC S9(5).
+       01  EMPLOYEE-TRANSACTION.
+           05  ET-TRANSACTION-CODE     PIC X.
+               88  ADD-RECORD                  VALUE "A".
+               88  CHANGE-RECORD               VALUE "C".
+               88  DELETE-RECORD               VALUE "D".
+           05  ET-MASTER-DATA.
+               05 ET-EMPLOYEE-ID       PIC X(5).
+               05 ET-EMPLOYEE-NAME     PIC X(30).         
+               05 ET-DEPARTMENT-CODE   PIC X(5).
+               05 ET-JOB-CLASS         PIC X(2).
+               05 ET-ANNUAL-SALARY     PIC S9(5)V99.
+          
 
-       01  INVENTORY-MASTER-RECORD.
-           05  IM-ITEM-NO              PIC X(5).
-           05  IM-DESCRIPTIVE-DATA.
-               10  IM-ITEM-DESC        PIC X(40).
-               10  IM-UNIT-COST        PIC S9(3)V99.
-               10  IM-UNIT-PRICE       PIC S9(3)V99.
-           05  IM-INVENTORY-DATA.
-               10  IM-REORDER-POINT    PIC S9(5).
-               10  IM-ON-HAND          PIC S9(5).
-               10  IM-ON-ORDER         PIC S9(5).
+       01  EMPLOYEE-MASTER-RECORD.
+               05 EM-EMPLOYEE-ID       PIC X(5).
+               05 EM-EMPLOYEE-NAME     PIC X(30).         
+               05 EM-DEPARTMENT-CODE   PIC X(5).
+               05 EM-JOB-CLASS         PIC X(2).
+               05 EM-ANNUAL-SALARY     PIC S9(5)V99.
+               05 EM-VACATION-HOURS    PIC S9(3).
+               05 EM-SICK-HOURS        PIC S9(3)V99.
 
        PROCEDURE DIVISION.
 
        000-MAINTAIN-INVENTORY-FILE.
 
-           OPEN INPUT  OLDMAST
-                       MNTTRAN
-                OUTPUT NEWMAST
+           OPEN INPUT  OLDEMP
+                       EMPTRAN
+                OUTPUT NEWEMP
                        ERRTRAN.
-           PERFORM 300-MAINTAIN-INVENTORY-RECORD
+           PERFORM 300-MAINTAIN-EMPLOYEE-RECORD
                UNTIL ALL-RECORDS-PROCESSED.
            CLOSE MNTTRAN
-                 OLDMAST
-                 NEWMAST
+                 OLDEMP
+                 NEWEMP
                  ERRTRAN.
            STOP RUN.
 
-       300-MAINTAIN-INVENTORY-RECORD.
+       300-MAINTAIN-EMPLOYEE-RECORD.
 
            IF NEED-TRANSACTION
                PERFORM 310-READ-INVENTORY-TRANSACTION
@@ -117,21 +109,21 @@
 
        310-READ-INVENTORY-TRANSACTION.
 
-           READ MNTTRAN INTO MAINTENANCE-TRANSACTION
+           READ MNTTRAN INTO EMPLOYEE-TRANSACTION
                AT END
-                   MOVE HIGH-VALUE TO MT-ITEM-NO.
+                   MOVE HIGH-VALUE TO ET-ITEM-NO.
 
        320-READ-OLD-MASTER.
 
-           READ OLDMAST INTO INVENTORY-MASTER-RECORD
+           READ OLDEMP INTO INVENTORY-MASTER-RECORD
                AT END
                    MOVE HIGH-VALUE TO IM-ITEM-NO.
 
        330-MATCH-MASTER-TRAN.
 
-           IF IM-ITEM-NO > MT-ITEM-NO
+           IF IM-ITEM-NO > ET-ITEM-NO
                PERFORM 350-PROCESS-HI-MASTER
-           ELSE IF IM-ITEM-NO < MT-ITEM-NO
+           ELSE IF IM-ITEM-NO < ET-ITEM-NO
                PERFORM 360-PROCESS-LO-MASTER
            ELSE
                PERFORM 370-PROCESS-MAST-TRAN-EQUAL.
@@ -139,10 +131,10 @@
        340-WRITE-NEW-MASTER.
 
            WRITE NEW-MASTER-RECORD.
-           IF NOT NEWMAST-SUCCESSFUL
-               DISPLAY "WRITE ERROR ON NEWMAST FOR ITEM NUMBER "
+           IF NOT NEWEMP-SUCCESSFUL
+               DISPLAY "WRITE ERROR ON NEWEMP FOR ITEM NUMBER "
                    IM-ITEM-NO
-               DISPLAY "FILE STATUS CODE IS " NEWMAST-FILE-STATUS
+               DISPLAY "FILE STATUS CODE IS " NEWEMP-FILE-STATUS
                SET ALL-RECORDS-PROCESSED TO TRUE.
 
        350-PROCESS-HI-MASTER.
@@ -173,11 +165,11 @@
 
        380-APPLY-ADD-TRANSACTION.
 
-           MOVE MT-ITEM-NO TO NM-ITEM-NO.
-           MOVE MT-ITEM-DESC TO NM-ITEM-DESC.
-           MOVE MT-UNIT-COST TO NM-UNIT-COST.
-           MOVE MT-UNIT-PRICE TO NM-UNIT-PRICE.
-           MOVE MT-REORDER-POINT TO NM-REORDER-POINT.
+           MOVE ET-ITEM-NO TO NM-ITEM-NO.
+           MOVE ET-ITEM-DESC TO NM-ITEM-DESC.
+           MOVE ET-UNIT-COST TO NM-UNIT-COST.
+           MOVE ET-UNIT-PRICE TO NM-UNIT-PRICE.
+           MOVE ET-REORDER-POINT TO NM-REORDER-POINT.
            MOVE ZERO TO NM-ON-HAND
                         NM-ON-ORDER.
            SET WRITE-MASTER TO TRUE.
@@ -185,10 +177,10 @@
 
        390-WRITE-ERROR-TRANSACTION.
 
-           WRITE ERROR-TRANSACTION FROM MAINTENANCE-TRANSACTION.
+           WRITE ERROR-TRANSACTION FROM EMPLOYEE-TRANSACTION.
            IF NOT ERRTRAN-SUCCESSFUL
                DISPLAY "WRITE ERROR ON ERRTRAN FOR ITEM NUMBER "
-                   MT-ITEM-NO
+                   ET-ITEM-NO
                DISPLAY "FILE STATUS CODE IS " ERRTRAN-FILE-STATUS
                SET ALL-RECORDS-PROCESSED TO TRUE
            ELSE
@@ -202,12 +194,12 @@
 
        410-APPLY-CHANGE-TRANSACTION.
 
-           IF MT-ITEM-DESC NOT = SPACE
-               MOVE MT-ITEM-DESC TO IM-ITEM-DESC.
-           IF MT-UNIT-COST NOT = ZERO
-               MOVE MT-UNIT-COST TO IM-UNIT-COST.
-           IF MT-UNIT-PRICE NOT = ZERO
-               MOVE MT-UNIT-PRICE TO IM-UNIT-PRICE.
-           IF MT-REORDER-POINT NOT = ZERO
-               MOVE MT-REORDER-POINT TO IM-REORDER-POINT.
+           IF ET-ITEM-DESC NOT = SPACE
+               MOVE ET-ITEM-DESC TO IM-ITEM-DESC.
+           IF ET-UNIT-COST NOT = ZERO
+               MOVE ET-UNIT-COST TO IM-UNIT-COST.
+           IF ET-UNIT-PRICE NOT = ZERO
+               MOVE ET-UNIT-PRICE TO IM-UNIT-PRICE.
+           IF ET-REORDER-POINT NOT = ZERO
+               MOVE ET-REORDER-POINT TO IM-REORDER-POINT.
            SET NEED-TRANSACTION TO TRUE.

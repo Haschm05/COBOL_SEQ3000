@@ -1,0 +1,72 @@
+       IDENTIFICATION DIVISION.
+
+       PROGRAM-ID. EMPIND1.
+
+       ENVIRONMENT DIVISION.
+
+       INPUT-OUTPUT SECTION.
+
+       FILE-CONTROL.
+           SELECT OLDEMP ASSIGN TO OLDEMP.
+           SELECT EMPMASTI ASSIGN TO EMPMASTI
+                           ORGANIZATION IS INDEXED
+                           ACCESS IS SEQUENTIAL
+                           RECORD KEY IS IR-EMPLOYEE-ID.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+
+       FD  OLDEMP.
+
+       01  SEQUENTIAL-RECORD-AREA  PIC X(57).
+
+       FD  EMPMASTI.
+
+       01  INDEXED-RECORD-AREA.
+           05  EM-EMPLOYEE-ID              PIC X(5).
+           05  FILLER                  PIC X(52).
+
+       WORKING-STORAGE SECTION.
+
+       01  SWITCHES.
+           05  EMPMAST-EOF-SWITCH      PIC X    VALUE "N".
+               88  EMPMAST-EOF                  VALUE "Y".
+
+       01  EMPLOYEE-MASTER-RECORD.
+
+       01 INDEXED-RECORD-AREA.
+           05 IR-EMPLOYEE-ID       PIC X(5).
+           05 FILLER               PIC X(52).
+
+       PROCEDURE DIVISION.
+
+       000-CREATE-EMPLOYEE-FILE.
+
+           OPEN INPUT  OLDEMP
+                OUTPUT EMPMASTI.
+           PERFORM 100-CREATE-EMPLOYEE-RECORD
+               UNTIL EMPMAST-EOF.
+           CLOSE OLDEMP
+                 EMPMASTI.
+           STOP RUN.
+
+       100-CREATE-EMPLOYEE-RECORD.
+
+           PERFORM 110-READ-SEQUENTIAL-RECORD.
+           IF NOT EMPMAST-EOF
+               PERFORM 120-WRITE-INDEXED-RECORD.
+
+       110-READ-SEQUENTIAL-RECORD.
+
+           READ OLDEMP INTO EMPLOYEE-MASTER-RECORD
+               AT END
+                   SET EMPMAST-EOF TO TRUE.
+
+       120-WRITE-INDEXED-RECORD.
+
+           WRITE INDEXED-RECORD-AREA FROM EMPLOYEE-MASTER-RECORD
+               INVALID KEY
+                   DISPLAY "WRITE ERROR ON EMPMASTI FOR ITEM NID "
+                       EM-EMPLOYEE-ID
+                   SET EMPMAST-EOF TO TRUE.

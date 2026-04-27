@@ -9,8 +9,8 @@
            SELECT OLDEMP    ASSIGN TO OLDEMP.
            SELECT NEWEMP    ASSIGN TO NEWEMP
                             FILE STATUS IS NEWEMP-FILE-STATUS.
-           SELECT ERRTRAN   ASSIGN TO ERRTRAN
-                            FILE STATUS IS ERRTRAN-FILE-STATUS.
+           SELECT ERRTRAN3   ASSIGN TO ERRTRAN3
+                            FILE STATUS IS ERRTRAN3-FILE-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
@@ -24,14 +24,14 @@
        FD  NEWEMP.
        01  NEW-MASTER-RECORD.
            05 NM-EMPLOYEE-ID       PIC X(5).
-           05 NM-EMPLOYEE-NAME     PIC X(30).         
+           05 NM-EMPLOYEE-NAME     PIC X(30).
            05 NM-DEPARTMENT-CODE   PIC X(5).
            05 NM-JOB-CLASS         PIC X(2).
            05 NM-ANNUAL-SALARY     PIC S9(5)V99.
            05 NM-VACATION-HOURS    PIC S9(3).
            05 NM-SICK-HOURS        PIC S9(3)V99.
 
-       FD  ERRTRAN.
+       FD  ERRTRAN3.
        01  ERROR-TRANSACTION       PIC X(50).
 
        WORKING-STORAGE SECTION.
@@ -49,8 +49,8 @@
        01  FILE-STATUS-FIELDS.
            05  NEWEMP-FILE-STATUS      PIC XX.
                88  NEWEMP-SUCCESSFUL           VALUE "00".
-           05  ERRTRAN-FILE-STATUS     PIC XX.
-               88  ERRTRAN-SUCCESSFUL          VALUE "00".
+           05  ERRTRAN3-FILE-STATUS     PIC XX.
+               88  ERRTRAN3-SUCCESSFUL          VALUE "00".
 
        01  EMPLOYEE-TRANSACTION.
            05  ET-TRANSACTION-CODE     PIC X.
@@ -58,21 +58,28 @@
                88  CHANGE-RECORD               VALUE "C".
                88  DELETE-RECORD               VALUE "D".
            05  ET-MASTER-DATA.
-               05 ET-EMPLOYEE-ID       PIC X(5).
-               05 ET-EMPLOYEE-NAME     PIC X(30).         
-               05 ET-DEPARTMENT-CODE   PIC X(5).
-               05 ET-JOB-CLASS         PIC X(2).
-               05 ET-ANNUAL-SALARY     PIC S9(5)V99.
+               88 ET-EMPLOYEE-ID       PIC X(5).
+               88 ET-EMPLOYEE-NAME     PIC X(30).
+               88 ET-DEPARTMENT-CODE   PIC X(5).
+               88 ET-JOB-CLASS         PIC X(2).
+               88 ET-ANNUAL-SALARY-CHAR PIC X(7).
+               88 ET-ANNUAL-SALARY REDEFINES ET-ANNUAL-SALARY-CHAR 
+                                         PIC 9(5)V99.
 
        01  EMPLOYEE-MASTER-RECORD.
            05 EM-EMPLOYEE-ID       PIC X(5).
-           05 EM-EMPLOYEE-NAME     PIC X(30).         
+           05 EM-EMPLOYEE-NAME     PIC X(30).
            05 EM-DEPARTMENT-CODE   PIC X(5).
            05 EM-JOB-CLASS         PIC X(2).
-           05 EM-ANNUAL-SALARY     PIC S9(5)V99.
-           05 EM-VACATION-HOURS    PIC S9(3).
-           05 EM-SICK-HOURS        PIC S9(3)V99.
-
+           05 EM-ANNUAL-SALARY-CHAR PIC X(7).
+           05 EM-ANNUAL-SALARY REDEFINES EM-ANNUAL-SALARY-CHAR 
+                                   PIC 9(5)V99.
+           05 EM-VACATION-HOURS-CHAR PIC X(3).
+           05 EM-VACATION-HOURS REDEFINES EM-VACATION-HOURS-CHAR 
+                                      PIC 9(3).
+           05 EM-SICK-HOURS-CHAR PIC X(5).
+           05 EM-SICK-HOURS REDEFINES EM-SICK-HOURS-CHAR PIC 9(3)V99.
+                  
        PROCEDURE DIVISION.
 
        000-MAINTAIN-EMPLOYEE-FILE.
@@ -80,7 +87,7 @@
            OPEN INPUT  OLDEMP
                        EMPTRAN
                 OUTPUT NEWEMP
-                       ERRTRAN.
+                       ERRTRAN3.
 
            PERFORM 300-MAINTAIN-EMPLOYEE-RECORD
                UNTIL ALL-RECORDS-PROCESSED.
@@ -88,7 +95,7 @@
            CLOSE EMPTRAN
                  OLDEMP
                  NEWEMP
-                 ERRTRAN.
+                 ERRTRAN3.
 
            STOP RUN.
 
@@ -180,10 +187,10 @@
 
            WRITE ERROR-TRANSACTION FROM EMPLOYEE-TRANSACTION.
 
-           IF NOT ERRTRAN-SUCCESSFUL
+           IF NOT ERRTRAN3-SUCCESSFUL
                DISPLAY "WRITE ERROR ON ERRTRAN FOR EMPLOYEE ID "
                    ET-EMPLOYEE-ID
-               DISPLAY "FILE STATUS CODE IS " ERRTRAN-FILE-STATUS
+               DISPLAY "FILE STATUS CODE IS " ERRTRAN3-FILE-STATUS
                SET ALL-RECORDS-PROCESSED TO TRUE
            ELSE
                SET NEED-TRANSACTION TO TRUE.

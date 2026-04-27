@@ -1,88 +1,133 @@
 # SEQ_COBOL
-#  RPT6000 – Year-To-Date Sales Report V6
+
+# SEQ3000 – Sequential Employee File Maintenance System
 
 ## Course Information
-**Course:** CIS352 – Intro to Enterprise Computing  
-**Assignment:** Chapters 6, 10, & 11  
-**Date:** April 9th 2026  
+
+**Course:** CIS352 – Intro to Enterprise Computing
+**Assignment:** Chapter 13 – Sequential File Processing, Chapter 14 - Indexed Files, Chapter 16 - Sort/Merge
+**Date:** April 27, 2026
 
 ---
 
 ## Table of Contents
+
 * [Project Overview](#project-overview)
 * [Features](#features)
 * [Key Concepts](#key-concepts-implemented)
 * [Workflow](#program-workflow)
-* [Output](#output)
-* [Authors](#authors)
+* [Input & Output Files](#input--output-files)
+* [Author](#author)
+
 ---
 
 ## Project Overview
 
-The **RPT6000 program** is a COBOL-based report system built from RPT5000.  
-It generates a **Year-To-Date Sales Report** that displays:
+The **SEQ3000 program** is a COBOL-based file maintenance system that processes employee data using **sequential files**.
 
-- Branch information  
-- Sales representative (SALESREP) names  
-- Customer data  
-- Sales totals (current and previous year)  
-- Change amounts and percentages  
+The program updates an existing **Employee Master File (OLDEMP)** by applying changes from a **Personnel Transaction File (EMPTRAN)** to produce:
 
-This version introduces more advanced COBOL concepts such as:
-- `REDEFINES`
-- Table processing with indexes
-- File handling for dynamic data loading
-- COPY libraries for modular design
+* A new updated **Employee Master File (NEWEMP)**
+* An **Error Transaction File (ERRTRAN)** for invalid records
 
 ---
 
 ## Features
 
-- Formatted multi-line report output
-- Sales comparisons (This YTD vs Last YTD)
-- Dynamic SALESREP name lookup from file
-- Calculated totals:
-  - Salesrep totals
-  - Branch totals
-  - Grand totals
-- Special value handling:
-  - `"N/A"` for undefined percentages
-  - `"OVRFLW"` for overflow conditions
+* Sequential file processing 
+* Supports three HR transaction types:
+
+  * **Add (A)** – Hire new employee
+  * **Delete (D)** – Terminate employee
+  * **Change (C)** – Update employee details
+ 
+* Automatic generation of:
+  * Updated master file (NEWEMP)
+  * Error file for invalid transactions (ERRTRAN)
 
 ---
 
 ## Key Concepts Implemented
 
-### Chapter 6
-- Use of `REDEFINES` for flexible data formatting
-- Packed decimal usage at group level
-- Handling special values (`N/A`, `OVRFLW`)
-- Initialization of totals
+### Chapter 13
 
-### Chapter 10
-- Table creation for SALESREP names
-- Use of indexing instead of subscripts
-- Dynamic lookup of SALESREP names
+* Sequential file reading and writing
+* Balanced-line processing 
+* File sorting assumptions
+* Multi-file input/output handling
 
-### Chapter 11
-- Use of COPY libraries
-- Separation of data structures into reusable components
-- JCL updates to include `COBOL.SYSLIB`
+### Chapter 14 
+
+* Introduction to indexed files (VSAM)
+* Converting sequential master file to indexed structure
+* Random access using keys
+
+### Chapter 16 
+
+* Sorting and merging datasets
+* Preparing files for batch processing
 
 ---
 
 ## Program Workflow
 
-1. Initialize variables and tables  
-2. Load SALESREP data from input file  
-3. Read customer sales records  
-4. Match SALESREP numbers to names  
-5. Perform calculations:
-   - Sales totals
-   - Change amounts
-   - Percent changes  
-6. Format and print report lines  
-7. Output totals at SALESREP, BRANCH, and GRAND levels  
+1. Open all input and output files
+2. Read first record from:
+   * Old Master file (OLDEMP)
+   * Transaction file (EMPTRAN)
+
+3. Compare Employee IDs using balanced-line logic
+4. Process based on conditions:
+   **Condition A: Master ID < Transaction ID**
+   * No transaction exists
+   * Write master record unchanged to NEWEMP
+
+   **Condition B: Master ID = Transaction ID**
+   * Evaluate Action Code:
+     * **D (Delete):** Skip record
+     * **C (Change):** Update only non-blank/non-zero fields
+     * **A (Add):** Error → write to ERRTRAN
+
+   **Condition C: Master ID > Transaction ID**
+   * Evaluate Action Code:
+     * **A (Add):** Create new employee record
+     * **D or C:** Error → write to ERRTRAN
+
+5. Continue until all records are processed
+
+6. Close all files
+
+---
+
+## Input & Output Files
+
+### Input Files
+
+**OLDEMP**
+
+* 57-byte fixed-length records
+* Sorted by Employee ID
+* Contains current employee data
+
+**EMPTRAN**
+
+* 50-byte fixed-length records
+* Sorted by Employee ID
+* Contains HR actions (A, D, C)
+
+---
+
+### Output Files
+
+**NEWEMP (New Employee Master File)**
+
+* Updated employee records
+* Same layout as OLDEMP
+
+**ERRTRAN (Error Transaction File)**
+
+* Contains invalid or unprocessable transactions
+* Same layout as EMPTRAN
 
 ---
 

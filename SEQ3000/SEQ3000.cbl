@@ -58,12 +58,12 @@
                88  CHANGE-RECORD               VALUE "C".
                88  DELETE-RECORD               VALUE "D".
            05  ET-MASTER-DATA.
-               88 ET-EMPLOYEE-ID       PIC X(5).
-               88 ET-EMPLOYEE-NAME     PIC X(30).
-               88 ET-DEPARTMENT-CODE   PIC X(5).
-               88 ET-JOB-CLASS         PIC X(2).
-               88 ET-ANNUAL-SALARY-CHAR PIC X(7).
-               88 ET-ANNUAL-SALARY REDEFINES ET-ANNUAL-SALARY-CHAR 
+               10 ET-EMPLOYEE-ID       PIC X(5).
+               10 ET-EMPLOYEE-NAME     PIC X(30).
+               10 ET-DEPARTMENT-CODE   PIC X(5).
+               10 ET-JOB-CLASS         PIC X(2).
+               10 ET-ANNUAL-SALARY-CHAR PIC X(7).
+               10 ET-ANNUAL-SALARY REDEFINES ET-ANNUAL-SALARY-CHAR 
                                          PIC 9(5)V99.
 
        01  EMPLOYEE-MASTER-RECORD.

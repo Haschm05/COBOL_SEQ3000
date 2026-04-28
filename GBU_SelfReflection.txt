@@ -1,6 +1,7 @@
 Name: Hayden Schmidt
 Date: 04/28/2026
 Assignment: COBOL Section 4 Assignment
+Github: https://github.com/Haschm05/COBOL_SEQ3000
 
 GBU:
 The good part is, as always, learning and understanding new things.

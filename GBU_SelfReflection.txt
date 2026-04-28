@@ -17,6 +17,7 @@ me out for a few days (re: more than a week.)
 Self-Reflection:
 I feel I did a pretty good job following along in class for SEQ3000.
 My program works, the only real issue is a null value which I
-accepted. I could have worked a bit more early on, which would have
+accepted. My commits for our in-class work could have had more 
+details. I could have worked a bit more early on, which would have
 saved me from a late submission, but hidnsight is 2020. I am ready
-for this yer to be over.
+for this yer to be over. 

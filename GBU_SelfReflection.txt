@@ -1,0 +1,22 @@
+Name: Hayden Schmidt
+Date: 04/28/2026
+Assignment: COBOL Section 4 Assignment
+
+GBU:
+The good part is, as always, learning and understanding new things.
+I did find it interesting to learn how to use input/output files.
+it is something that I have messed around with in Python before,
+but COBOL is quite a bit different. The bad part of this assignemnt
+was EMPIND02, the assignment itself seemed doable, but VScode 
+decided to fail. I mentioned in a commit, but the only solution I
+know that works is reinstalling the application and I am not up for
+that task at this point in the year. The ugly is that I got sick. I
+dont know if it was the same thing Lori had last week, but it put
+me out for a few days (re: more than a week.)
+
+Self-Reflection:
+I feel I did a pretty good job following along in class for SEQ3000.
+My program works, the only real issue is a null value which I
+accepted. I could have worked a bit more early on, which would have
+saved me from a late submission, but hidnsight is 2020. I am ready
+for this yer to be over.

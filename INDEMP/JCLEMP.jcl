@@ -1,4 +1,4 @@
-//EMPIND1 JOB (KC03HE8),'CREATE EMPMAST1',REGION=0M,CLASS=A,
+//EMPIND1  JOB (KC03HE8),'CREATE EMPMASTI',REGION=0M,CLASS=A,
 //             MSGCLASS=H,NOTIFY=&SYSUID,MSGLEVEL=(1,1)
 //*
 //*------------------------------------------------------------*
@@ -9,7 +9,7 @@
 //STEP1     EXEC PGM=IDCAMS
 //SYSPRINT  DD  SYSOUT=*
 //SYSIN     DD  *
-  DELETE KC03HE8.INVMASTI.KSDS CLUSTER PURGE
+  DELETE KC03HE8.EMPMASTI.KSDS CLUSTER PURGE
   SET MAXCC = 0
 /*
 //*
@@ -23,7 +23,7 @@
   DEFINE CLUSTER                        -
     (NAME(KC03HE8.EMPMASTI.KSDS)           -
      RECORDS(1000 500)                  -
-     RECORDSIZE(57 57)                  -
+     RECORDSIZE(70 70)                  -
      KEYS(5 0)                          -
      INDEXED                            -
      REUSE)                             -
@@ -34,7 +34,7 @@
 /*
 //*
 //*------------------------------------------------------------*
-//* STEP 3: RUN EMPIND1 TO LOAD EMPLOYEE RECORDS FROM OLDSEMP        *
+//* STEP 3: RUN IND1000 TO LOAD EMPMASTI FROM OLDEMP        *
 //*------------------------------------------------------------*
 //*-----------------------------------------------------------*
 //* BASIC COMPILE, LINK, AND GO JCL
@@ -43,5 +43,5 @@
 //         PARM.COBOL='TEST,RENT,APOST,OBJECT,NODYNAM'
 //COBOL.STEPLIB DD DSN=IGY640.SIGYCOMP,DISP=SHR
 //COBOL.SYSIN   DD DISP=SHR,DSN=KC03HE8.CIS352.COBOL(EMPIND1)
-//GO.OLDEMP  DD DISP=SHR,DSN=KC03HE8.CIS352.OLDEMP
+//GO.OLDEMP   DD DISP=SHR,DSN=KC03HE8.CIS352.OLDEMP
 //GO.EMPMASTI   DD DISP=OLD,DSN=KC03HE8.EMPMASTI.KSDS

@@ -18,14 +18,12 @@
        FILE SECTION.
 
        FD  OLDEMP.
-
        01  SEQUENTIAL-RECORD-AREA  PIC X(57).
 
        FD  EMPMASTI.
-
        01  INDEXED-RECORD-AREA.
-           05  EM-EMPLOYEE-ID              PIC X(5).
-           05  FILLER                  PIC X(52).
+           05  IR-EMPLOYEE-ID              PIC X(5).
+           05  FILLER                      PIC X(52).
 
        WORKING-STORAGE SECTION.
 
@@ -34,10 +32,8 @@
                88  EMPMAST-EOF                  VALUE "Y".
 
        01  EMPLOYEE-MASTER-RECORD.
-
-       01 INDEXED-RECORD-AREA.
-           05 IR-EMPLOYEE-ID       PIC X(5).
-           05 FILLER               PIC X(52).
+           05 EM-EMPLOYEE-ID       PIC X(5).
+           05 FILLER               PIC X(52). 
 
        PROCEDURE DIVISION.
 

@@ -133,6 +133,8 @@ The program updates an existing **Employee Master File (OLDEMP)** by applying ch
 
 ## Output
 <img width="651" height="148" alt="image" src="https://github.com/user-attachments/assets/074d52e8-6513-4665-9464-5686964e9358" />
+<img width="500" height="93" alt="image" src="https://github.com/user-attachments/assets/16ec0f62-cc10-4efe-b573-df6fd01411a3" />
+
 
 ---
 

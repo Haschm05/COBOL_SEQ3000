@@ -8,12 +8,10 @@ The good part is, as always, learning and understanding new things.
 I did find it interesting to learn how to use input/output files.
 it is something that I have messed around with in Python before,
 but COBOL is quite a bit different. The bad part of this assignemnt
-was EMPIND02, the assignment itself seemed doable, but VScode 
-decided to fail. I mentioned in a commit, but the only solution I
-know that works is reinstalling the application and I am not up for
-that task at this point in the year. The ugly is that I got sick. I
-dont know if it was the same thing Lori had last week, but it put
-me out for a few days (re: more than a week.)
+was EMPIND02, the assignment itself was a challenge but not the 
+issue, but VScode decided to fail (Thank you Debbie). The ugly is 
+that I got sick. I dont know if it was the same thing Lori had last 
+week, but it put me out for a few days (re: more than a week.)
 
 Self-Reflection:
 I feel I did a pretty good job following along in class for SEQ3000.

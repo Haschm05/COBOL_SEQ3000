@@ -1,1 +1,0 @@
-Fix loaction of MNTTRAN. These files should be like ERRTRAN

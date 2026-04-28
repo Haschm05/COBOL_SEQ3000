@@ -5,7 +5,9 @@
 ## Course Information
 
 **Course:** CIS352 – Intro to Enterprise Computing
+
 **Assignment:** Chapter 13 – Sequential File Processing, Chapter 14 - Indexed Files, Chapter 16 - Sort/Merge
+
 **Date:** April 27, 2026
 
 ---
